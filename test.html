@@ -38,8 +38,23 @@
 		<div role="tabpanel" class="tab-pane fade in active" id="base">
 			<!--ISO_PATH-->
 			<div class="input-group input-group-sm">
-			<span class="input-group-addon" aria-describedby="base-iso_path">iso_path</span>
-			<input type="text" class="form-control" placeholder="default nightly" id="base-iso_path">
+			<span class="input-group-addon" aria-describedby="base-iso_path">ISO Path</span>
+			<input type="text" required="" class="form-control" placeholder="Nightly" id="base-iso_path">
+			</div>
+			<!--NAME_SERVER-->
+			<div class="input-group input-group-sm">
+			<span class="input-group-addon" aria-describedby="base-name_server">DNS Server</span>
+			<input type="text" class="form-control" placeholder="103.14.2.35" id="base-name_server">
+			</div>
+			<!--SNMP SERVER-->
+			<div class="input-group input-group-sm">
+			<span class="input-group-addon" aria-describedby="base-snmp_sink">SNMP Server</span>
+			<input type="text" class="form-control" placeholder="Any Hosts IP" id="base-snmp_sink">
+			</div>
+			<!--NTP SERVER-->
+			<div class="input-group input-group-sm">
+			<span class="input-group-addon" aria-describedby="base-ntp_server">NTP Server</span>
+			<input type="text" class="form-control" placeholder="198.55.111.5" id="base-ntp_server">
 			</div>
 			<!--EMAIL-->
 			<div class="input-group input-group-sm" >
@@ -53,12 +68,13 @@
 			<div class="row">
 				<input type="hidden" name="count" value="1" />
 					<div class="control-group" id="fields">
-						<label class="control-label" for="field1"></label>
 						<div class="controls" id="profs"> 
 							<div id="field">
-								<input autocomplete="off" class="input" id="field1" name="prof1" type="text" placeholder="Type something" data-items="8"/>
-								<button id="b1" class="btn add-more" type="button">+</button>
+								<input type="text" class="form-control" placeholder="IP Address"  name="prof1" id="field1" data-items="8">
+								<input type="text" class="form-control" placeholder="UserName" name="prof2" id="field2" data-items="8">
+								<input type="text" class="form-control" placeholder="Password" name="prof3" id="field3" data-items="8">
 							</div>
+							<button id="b1" class="btn btn-primary add-more" type="button">Add Host</button>
 						<br>
 						</div>
 					</div>
@@ -117,7 +133,12 @@
 						return document.getElementById('filename').value;
 					},
 					data: function(){ 
-						return document.getElementById('base-iso_path').value;
+						var full_ini = "";
+						var iso_path = "iso_path = " + document.getElementById('base-iso_path').value;
+						var name_server = "name_server = " + document.getElementById('base-name_server').value;
+						var snmp_sink = "snmpsink_server = " + document.getElementById('base-snmp_sink').value;
+						full_ini = "[HOSTS]\n" + iso_path + "\n" + name_server + "\n" + snmp_sink ;
+						return full_ini;
 					},
 					onComplete: function(){ alert('Your INI-File Has Been Saved!'); },
 					onCancel: function(){ alert('You have cancelled the saving INI.'); },
@@ -130,28 +151,32 @@
 					append: false
 				});
 			 $(document).ready(function(){
-				var next = 1;
+				var next = 3;
 				$(".add-more").click(function(e){
 					e.preventDefault();
 					var addto = "#field" + next;
 					var addRemove = "#field" + (next);
 					next = next + 1;
-					var newIn = '<input autocomplete="off" class="input form-control" id="field' + next + '" name="field' + next + '" type="text">';
+					var newIn = '';
+					newIn = newIn + '<input autocomplete="off" class="input" id="field' + next + '" name="field' + next + '" type="text"><br>';
+					newIn = newIn + '<input autocomplete="off" class="input" id="field' + (next + 1) + '" name="field' + next + '" type="text"><br>';
+					newIn = newIn + '<input autocomplete="off" class="input" id="field' + (next + 2) + '" name="field' + next + '" type="text"><br>';
 					var newInput = $(newIn);
-					var removeBtn = '<button id="remove' + (next - 1) + '" class="btn btn-danger remove-me" >-</button></div><div id="field">';
+					var removeBtn = ''
+					removeBtn = removeBtn + '<button id="remove' + (next - 1) + '" class="btn btn-danger remove-me" >Remove Host</button></div><div id="field">';
 					var removeButton = $(removeBtn);
 					$(addto).after(newInput);
 					$(addRemove).after(removeButton);
 					$("#field" + next).attr('data-source',$(addto).attr('data-source'));
-					$("#count").val(next);  
+					$("#count").val(next + 3);  
 					
-						$('.remove-me').click(function(e){
-							e.preventDefault();
-							var fieldNum = this.id.charAt(this.id.length-1);
-							var fieldID = "#field" + fieldNum;
-							$(this).remove();
-							$(fieldID).remove();
-						});
+					$('.remove-me').click(function(e){
+						e.preventDefault();
+						var fieldNum = this.id.charAt(this.id.length-1);
+						var fieldID = "#field" + fieldNum;
+						$(this).remove();
+						$(fieldID).remove();
+					});
 				});
 				
 			
